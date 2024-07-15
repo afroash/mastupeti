@@ -1,0 +1,26 @@
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css"> 
+    <script src="https://unpkg.com/htmx.org@1.9.5"></script>
+    <style>
+        body {
+            padding: 20px;
+            font-family: sans-serif;
+        }
+        .video-container {
+            margin-bottom: 30px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            border-radius: 8px;
+        }
+        .video-title {
+            font-size: 1.2em;
+            margin-bottom: 10px;
+        }
+        .video-error {
+            color: red;
+            margin-top: 10px;
+        }
+    </style>
+<section class="section">
+    {{ template "navbar.html" . }}
+  </section>

@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>maStupeti</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
+    <script src="https://unpkg.com/htmx.org@1.9.5"></script> 
+    <style>
+        body {
+            padding: 20px;
+            font-family: sans-serif;
+        }
+        .video-container {
+            margin-bottom: 30px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            border-radius: 8px;
+        }
+        .video-title {
+            font-size: 1.2em;
+            margin-bottom: 10px;
+        }
+        .video-error {
+            color: red;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <section class="section">
+        {{ template "navbar.html" . }}
+    </section>
+    
+    <div class="container">
+        <h1 class="title is-1">Maybe Tiri maStupeti</h1>
+
+        <div id="add-video-container"></div> 
+
+        <h2 class="title is-2">Uploaded Videos</h2>
+        <div id="videos" class="columns is-multiline">
+            {{ if .videos }}
+                {{ range .videos }}
+                    <div class="column is-one-third">
+                        <div class="video-container">
+                            <h3 class="video-title">{{ .Title }}</h3>
+                            <p>{{ .Body }}</p>
+                            <video width="100%" controls>
+                                <source src="{{ .URL }}" type="video/mp4">
+                                Your browser does not support the video tag.
+                            </video>
+                            <div class="video-error" style="display: none;">Failed to load video</div>
+                        </div>
+                    </div>
+                {{ end }}
+            {{ else }}
+                <p>No videos found.</p> 
+            {{ end }}
+        </div>
+    </div>
+
+    <script>
+        document.querySelectorAll('video').forEach(video => {
+            video.addEventListener('error', () => {
+                video.nextElementSibling.style.display = 'block';
+            });
+        });
+    </script>
+</body>
+</html>

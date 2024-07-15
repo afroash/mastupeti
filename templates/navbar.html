@@ -1,0 +1,36 @@
+<nav class="navbar" role="navigation" aria-label="main navigation">
+  <div class="navbar-brand">
+    <a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false" data-target="navbarBasicExample">
+      <span aria-hidden="true"></span>
+      <span aria->
+      <span aria-hidden="true"></span>
+    </a>
+  </div>
+
+  <div id="navbarBasicExample" class="navbar-menu">
+      <div class="navbar-start">
+          <a class="navbar-item" href="/">Home</a>
+          <a class="navbar-item" hx-get="/addvideo" hx-trigger="click"  hx-target="#add-video-container">Add Video</a>
+          <a class="navbar-item" hx-get="/signup" hx-trigger="click" hx-target="#add-video-container">Signup</a>
+          <a class="navbar-item" hx-get="/login" hx-trigger="click" hx-target="#add-video-container">Login</a>
+    </div>
+  </div>
+</nav>
+<nav class="navbar" role="navigation" aria-label="main navigation">
+  <div class="navbar-brand">
+  </div>
+
+  <div id="navbarBasicExample" class="navbar-menu">
+    <div class="navbar-start">
+        </div>
+    <div class="navbar-end">
+      <div class="navbar-item">
+        <div class="buttons" id="auth-buttons">
+            <button hx-get="/validate" hx-trigger="load" class="button is-light">
+                Loading... 
+            </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</nav>

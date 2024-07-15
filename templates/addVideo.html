@@ -1,0 +1,23 @@
+{{ if .showForm }}
+<form action="/videos" method="POST" enctype="multipart/form-data" class="box"
+          hx-post="/videos" hx-trigger="submit" hx-swap="outerHTML"> 
+        <div class="field">
+            <label class="label" for="title">Title:</label>
+            <input class="input" type="text" id="title" name="title">
+        </div>
+    
+        <div class="field">
+            <label class="label" for="body">Body:</label>
+            <textarea class="textarea" id="body" name="body"></textarea>
+        </div>
+    
+        <div class="field">
+            <label class="label" for="file">File:</label>
+            <input class="input" type="file" id="file" name="file">
+        </div>
+    
+        <button class="button is-primary" type="submit">Upload</button>
+    </form>
+{{ end }}
+
+

@@ -1,0 +1,9 @@
+</section>
+<script>
+    document.querySelectorAll('video').forEach(video => {
+        video.addEventListener('error', () => {
+            video.nextElementSibling.style.display = 'block';
+        });
+    });
+</script>
+
