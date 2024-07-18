@@ -15,7 +15,7 @@ func VideoCreate(c *gin.Context) {
 	if c.Request.Method == "POST" {
 		file, fileHeader, err := c.Request.FormFile("file")
 		if err != nil {
-			c.JSON(400, gin.H{"error": "File upload failed"})
+			c.JSON(400, gin.H{"error": "File upload failed!"})
 			return
 		}
 		defer file.Close()
@@ -50,9 +50,7 @@ func VideoCreate(c *gin.Context) {
 		}
 
 		// Return "Add Video" button HTML snippet to replace the form
-		c.HTML(200, "addVideo.html", gin.H{
-			"showForm": false, // Indicate to template to not show the form
-		})
+		c.Redirect(302, "/videos")
 	} else { // GET
 		// Return the initial form for adding videos
 		c.HTML(200, "addVideo.html", gin.H{

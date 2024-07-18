@@ -6,13 +6,13 @@
   <div class="navbar-menu">
       <div class="navbar-end">
           {{if .IsAuthenticated}}
-              <button id="uploadBtn" class="button is-light">Upload Video</button>
+              <button class="btn primary" hx-get="/upload-modal" hx-target="body" hx-swap="beforeend">Upload</button>
               <a class="navbar-item" href="/logout">Logout</a>
           {{else}}
               <!-- Trigger/Open The Signup Modal -->
-              <button id="myBtn" class="button is-light">Signup</button>
+              <button class="btn primary" hx-get="/signup-modal" hx-target="body" hx-swap="beforeend">SignUp</button>
               <!-- Trigger/Open The Login Modal -->
-              <button id="loginBtn" class="button is-light">Login</button>
+              <button class="btn primary" hx-get="/login-modal" hx-target="body" hx-swap="beforeend">Login</button>
           {{end}}
       </div>
   </div>

@@ -1,0 +1,32 @@
+<!-- The Upload Video Modal -->
+<div id="modal" _="on closeModal add .closing then wait for animationend then remove me">
+	<div class="modal-underlay" _="on click trigger closeModal"></div>
+	<div class="modal-content">
+		<h1>SignUP</h1>
+		<p>Welcome, Please Signup..</p>
+        <form action="/videos" method="POST" enctype="multipart/form-data" class="box">
+            <div class="field">
+                <label class="label">Title</label>
+                <div class="control">
+                    <input class="input" type="text" name="title" required>
+                </div>
+            </div>
+            <div class="field">
+                <label class="label">Description</label>
+                <div class="control">
+                    <textarea class="textarea" name="description" required></textarea>
+                </div>
+            </div>
+            <div class="field">
+                <label class="label">Video File</label>
+                <div class="control">
+                    <input class="input" type="file" name="file" accept="video/*" required>
+                </div>
+            </div>
+            <div class="field">
+                <div class="control">
+                    <button class="button is-primary" type="submit">Upload</button>
+                </div>
+            </div>
+        </form>
+</div>

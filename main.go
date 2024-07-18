@@ -15,7 +15,9 @@ func init() {
 
 func main() {
 	r := gin.Default()
-	r.Static("/assets", "./assets")
+
+	r.Static("/assests", "./assests")
+
 	r.LoadHTMLGlob("templates/*")
 
 	// Public routes
@@ -26,6 +28,11 @@ func main() {
 	r.GET("/signup", controllers.SignUp)
 	r.POST("/login", controllers.LoginPage)
 	r.GET("/login", controllers.LoginPage)
+
+	//Modal routes
+	r.GET("/signup-modal", controllers.SignUpModal)
+	r.GET("/login-modal", controllers.LoginModal)
+	r.GET("/upload-modal", controllers.UploadFormModal)
 
 	// Routes that require authentication
 	auth := r.Group("/")

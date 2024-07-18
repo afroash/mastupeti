@@ -37,3 +37,18 @@ func HomePage(c *gin.Context) {
 		"IsAuthenticated": isAuthenticated,
 	})
 }
+
+// function to render the signup modal.
+func SignUpModal(c *gin.Context) {
+	c.HTML(200, "signUpModal.html", nil)
+}
+
+// function to render the login modal.
+func LoginModal(c *gin.Context) {
+	c.HTML(200, "loginModal.html", nil)
+}
+
+// function to render the login modal.
+func UploadFormModal(c *gin.Context) {
+	c.HTML(200, "uploadVideoModal.html", nil)
+}

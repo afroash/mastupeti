@@ -71,7 +71,6 @@ func SignUp(c *gin.Context) {
 
 // LoginPage function
 func LoginPage(c *gin.Context) {
-	// Handle user login (POST only)
 	// Get the email and password from the form request.
 	var body struct {
 		Email    string `form:"email" binding:"required,email"`
@@ -79,7 +78,7 @@ func LoginPage(c *gin.Context) {
 	}
 
 	if err := c.ShouldBind(&body); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid login data"})
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid login data!!"})
 		return
 	}
 
