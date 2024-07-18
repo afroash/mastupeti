@@ -1,3 +1,5 @@
 *.bin
 mastupeti
 .env
+tmp/
+.air.toml

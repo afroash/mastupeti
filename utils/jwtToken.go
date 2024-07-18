@@ -16,7 +16,7 @@ func GenerateToken(c *gin.Context, user models.User) (string, error) {
 	// Generate a JWT token
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
 		"sub": user.ID,
-		"exp": time.Now().Add(time.Hour * 24).Unix(),
+		"exp": time.Now().Add(time.Hour).Unix(),
 	})
 
 	// Sign and get the complete encoded token as a string using the secret
@@ -30,4 +30,17 @@ func GenerateToken(c *gin.Context, user models.User) (string, error) {
 
 func ValidateToken(c *gin.Context, tokenString string) error {
 	return nil
+}
+
+var invalidatedTokens = make(map[string]time.Time)
+
+// InvalidateToken adds a token to the invalidated tokens map
+func InvalidateToken(token string) {
+	invalidatedTokens[token] = time.Now()
+}
+
+// IsTokenInvalidated checks if a token is in the invalidated tokens map
+func IsTokenInvalidated(token string) bool {
+	_, exists := invalidatedTokens[token]
+	return exists
 }

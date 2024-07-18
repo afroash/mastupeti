@@ -71,51 +71,46 @@ func SignUp(c *gin.Context) {
 
 // LoginPage function
 func LoginPage(c *gin.Context) {
-	if c.Request.Method == "POST" {
-		// Get the email and password from the form request.
-		var body struct {
-			Email    string `form:"email" binding:"required,email"`
-			Password string `form:"password" binding:"required"`
-		}
-
-		if err := c.ShouldBind(&body); err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid login data"})
-			return
-		}
-
-		// Check if the email is in the database.
-		var user models.User
-		result := initializers.DB.First(&user, "email = ?", body.Email)
-		if result.Error != nil {
-			c.JSON(http.StatusNotFound, gin.H{"error": "Invalid email or password"}) // Generic message to avoid revealing if email exists
-			return
-		}
-
-		// Check if the password is correct.
-		err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(body.Password))
-		if err != nil {
-			c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid email or password"}) // Generic message
-			return
-		}
-
-		// Generate a JWT token.
-		tokenString, err := utils.GenerateToken(c, user)
-		if err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to generate token"})
-			return
-		}
-
-		// Save JWT token in a cookie.
-		c.SetSameSite(http.SameSiteLaxMode)
-		c.SetCookie("Authorization", tokenString, 3600*24, "", "", false, true)
-
-		// Redirect on successful login
-		c.Redirect(http.StatusFound, "/") // Redirect to home page
-		// Or respond with the "login.html" template, setting showForm to false:
-		c.HTML(http.StatusOK, "login.html", gin.H{"showForm": false})
-	} else { // GET
-		c.HTML(http.StatusOK, "login.html", gin.H{"showForm": true})
+	// Handle user login (POST only)
+	// Get the email and password from the form request.
+	var body struct {
+		Email    string `form:"email" binding:"required,email"`
+		Password string `form:"password" binding:"required"`
 	}
+
+	if err := c.ShouldBind(&body); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid login data"})
+		return
+	}
+
+	// Check if the email is in the database.
+	var user models.User
+	result := initializers.DB.First(&user, "email = ?", body.Email)
+	if result.Error != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": "Invalid email or password"}) // Generic message to avoid revealing if email exists
+		return
+	}
+
+	// Check if the password is correct.
+	err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(body.Password))
+	if err != nil {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid email or password"}) // Generic message
+		return
+	}
+
+	// Generate a JWT token.
+	tokenString, err := utils.GenerateToken(c, user)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to generate token"})
+		return
+	}
+
+	// Save JWT token in a cookie.
+	c.SetSameSite(http.SameSiteLaxMode)
+	c.SetCookie("Authorization", tokenString, 3600, "", "", false, true)
+
+	// Redirect on successful login
+	c.Redirect(http.StatusFound, "/") // Redirect to home page
 }
 
 func Validate(c *gin.Context) {
@@ -131,9 +126,18 @@ func Validate(c *gin.Context) {
 }
 
 func Logout(c *gin.Context) {
-	c.SetCookie("Authorization", "", -1, "", "", false, true)
-	// Optionally, invalidate the token on the server-side if you're using JWTs
+	// Extract the token from the request's Authorization cookie
+	token, err := c.Cookie("Authorization")
+	if err == nil && token != "" {
+		// Invalidate the token on the server-side
+		utils.InvalidateToken(token)
+	}
 
-	// Return the login button HTML to replace the logout button
-	c.HTML(http.StatusOK, "loginButton.html", nil)
+	// Set the Authorization cookie to expire immediately
+	c.SetCookie("Authorization", "", -1, "", "", false, true)
+
+	// After logout redirect to Home page
+	c.Redirect(http.StatusFound, "/")
+
+	//c.HTML(http.StatusOK, "loginButton.html", nil)
 }

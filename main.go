@@ -20,6 +20,8 @@ func main() {
 
 	// Public routes
 	r.GET("/", controllers.HomePage)
+
+	//Signup and login routes
 	r.POST("/signup", controllers.SignUp)
 	r.GET("/signup", controllers.SignUp)
 	r.POST("/login", controllers.LoginPage)
@@ -30,6 +32,7 @@ func main() {
 	auth.Use(middleware.RequireAuth)
 	{
 		auth.GET("/validate", controllers.Validate)
+		auth.POST("/logout", controllers.Logout)
 		auth.GET("/logout", controllers.Logout)
 		auth.GET("/addvideo", controllers.VideoCreate)
 		auth.POST("/videos", controllers.VideoCreate)

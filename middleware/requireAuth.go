@@ -61,3 +61,51 @@ func RequireAuth(c *gin.Context) {
 		c.AbortWithStatusJSON(403, gin.H{"message": "Invalid token"})
 	}
 }
+
+// Check if there is a valid token in the request
+
+func IsAuthenticated(c *gin.Context) bool {
+	// Get cookie of request
+	tokenString, err := c.Cookie("Authorization")
+	if err != nil {
+		return false
+	}
+
+	// Decode and validate token
+	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
+		// Validate the signing method
+		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
+			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
+		}
+		// Return the secret key
+		return []byte(os.Getenv("SECRET")), nil
+	})
+
+	if err != nil {
+		return false
+	}
+
+	// Extract claims and check token validity
+	claims, ok := token.Claims.(jwt.MapClaims)
+	if ok && token.Valid {
+		// Check token expiration
+		if float64(time.Now().Unix()) > claims["exp"].(float64) {
+			return false
+		}
+
+		// Find user with token sub (subject)
+		var user models.User
+		initializers.DB.First(&user, claims["sub"])
+
+		if user.ID == 0 {
+			return false
+		}
+
+		// Attach user to request context
+		c.Set("user", user)
+
+		return true
+	}
+
+	return false
+}
