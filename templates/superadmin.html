@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Streaming App Management</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
+  <style>
+    /* Additional custom styles (if needed) */
+    /*centre title*/
+    .title {
+      text-align: center;
+    }
+
+  </style>
+</head>
+<body>
+    {{ template "navbar.html" . }}
+  <section class="section">
+    <div class="container">
+      <h1 class="title">Streaming App Management</h1>
+
+      <h2 class="subtitle">Users</h2>
+
+      {{if .users}}
+        <table class="table is-striped is-hoverable is-fullwidth">
+          <thead>
+            <tr>
+              <th><input type="checkbox"></th> 
+              <th>Username</th>
+              <th>Email</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {{range .users}} 
+              <tr>
+                <td><input type="checkbox"></td> 
+                <td>{{.Username}}</td>
+                <td>{{.Email}}</td>
+                <td>
+                  <div class="buttons">
+                    <button class="button is-info">Update</button> 
+                    <button class="button is-danger">Delete</button>
+                  </div>
+                </td>
+              </tr>
+            {{end}}
+          </tbody>
+        </table>
+      {{else}}
+        <p>No users found.</p>
+      {{end}}
+
+      <div class="buttons">
+        <button class="button is-danger">Delete Selected</button> 
+        <button class="button is-info">Update Selected</button>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <h2 class="subtitle">Videos</h2>
+
+      {{if .videos}}
+        <table class="table is-striped is-hoverable is-fullwidth">
+          <thead>
+            <tr>
+              <th><input type="checkbox"></th> 
+              <th>Title</th>              
+              <th>Views</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {{range .videos}}
+              <tr>
+                <td><input type="checkbox"></td> 
+                <td>{{.Title}}</td>                
+                <td>N/A</td> 
+                <td>
+                  <button class="button is-danger">Delete</button>
+                </td>
+              </tr>
+            {{end}}
+          </tbody>
+        </table>
+      {{else}}
+        <p>No videos found.</p>
+      {{end}}
+
+      <div class="buttons">
+        <button class="button is-danger">Delete Selected</button>
+      </div>
+    </div>
+  </section>
+</body>
+</html>

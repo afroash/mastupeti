@@ -4,7 +4,7 @@
 	<div class="modal-content">
 		<h1>Login</h1>
 		<p>Welcome, Please Login..</p>
-        <form method="post" action="/login">        
+        <form hx-post="/login" hx-target="#login-error" hx-swap="innerHTML">
         <div class="field">
             <label class="label">Email</label>
             <div class="control">
@@ -19,8 +19,28 @@
         </div>
         <div class="field">
             <div class="control">
-                <button class="button is-primary" type="submit">Login</button> <button class="btn danger" _="on click trigger closeModal">Close</button>
+                <button class="button is-primary" type="submit">Login</button>
+                <button class="btn danger" _="on click trigger closeModal">Close</button>
             </div>
         </div>
+        <div id="login-error" class="field">
+            <!-- Error message will be inserted here -->
+        </div>
+        </form>
 	</div>
 </div>
+
+<script>
+document.querySelector('form').addEventListener('htmx:afterRequest', function(event) {
+    var response = event.detail.xhr.response;
+    var target = document.querySelector('#login-error');
+    
+    if (event.detail.xhr.status !== 200) {
+        var errorMessage = JSON.parse(response).error;
+        target.innerHTML = '<div class="notification is-danger">' + errorMessage + '</div>';
+    } else {
+        // Redirect to the home page on successful login
+        window.location.href = "/";
+    }
+});
+</script>

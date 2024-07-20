@@ -6,6 +6,7 @@
   <div class="navbar-menu">
       <div class="navbar-end">
           {{if .IsAuthenticated}}
+              <button class="btn primary" hx-get="/stats" hx-target="body" hx-swap="beforeend">Stats</button>
               <button class="btn primary" hx-get="/upload-modal" hx-target="body" hx-swap="beforeend">Upload</button>
               <a class="navbar-item" href="/logout">Logout</a>
           {{else}}

@@ -17,11 +17,15 @@ func main() {
 	r := gin.Default()
 
 	r.Static("/assests", "./assests")
-
 	r.LoadHTMLGlob("templates/*")
 
 	// Public routes
 	r.GET("/", controllers.HomePage)
+	//to be done
+	//r.GET("/about", controllers.AboutPage)
+	//r.GET("/contact", controllers.ContactPage)
+
+	r.GET("/admin", controllers.AdminPage)
 
 	//Signup and login routes
 	r.POST("/signup", controllers.SignUp)
@@ -45,6 +49,7 @@ func main() {
 		auth.POST("/videos", controllers.VideoCreate)
 		auth.PUT("/videos/:id", controllers.VideoUpdate)
 		auth.DELETE("/videos/:id", controllers.VideoDelete)
+		auth.GET("/stats", controllers.Dashboard)
 	}
 
 	// Public video routes

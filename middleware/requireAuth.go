@@ -84,7 +84,6 @@ func IsAuthenticated(c *gin.Context) bool {
 	if err != nil {
 		return false
 	}
-
 	// Extract claims and check token validity
 	claims, ok := token.Claims.(jwt.MapClaims)
 	if ok && token.Valid {

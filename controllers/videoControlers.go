@@ -4,6 +4,7 @@ import (
 	"log"
 
 	"github.com/afroash/mastupeti/initializers"
+	"github.com/afroash/mastupeti/middleware"
 	"github.com/afroash/mastupeti/models"
 	"github.com/afroash/mastupeti/utils"
 	"github.com/gin-gonic/gin"
@@ -27,6 +28,14 @@ func VideoCreate(c *gin.Context) {
 			return
 		}
 	}
+	// Get authenticated user from context
+	user, exists := c.Get("user")
+	if !exists {
+		c.AbortWithStatusJSON(500, gin.H{"message": "Internal server error"})
+		return
+	}
+
+	userID := user.(models.User).ID // Extract the UserID from the User object
 
 	// Get data from request (for both GET and POST)
 	var body struct {
@@ -42,7 +51,12 @@ func VideoCreate(c *gin.Context) {
 	// Handle both GET and POST
 	if c.Request.Method == "POST" {
 		// Create video (POST only)
-		video := models.Video{Title: body.Title, URL: fileURL, Body: body.Body}
+		video := models.Video{
+			Title:  body.Title,
+			URL:    fileURL,
+			Body:   body.Body,
+			UserID: userID,
+		}
 		result := initializers.DB.Create(&video)
 		if result.Error != nil {
 			c.JSON(500, gin.H{"error": "Failed to create video"})
@@ -67,8 +81,22 @@ func VideoList(c *gin.Context) {
 	}
 	// return all videos
 	// Render the index.html template with the videos data
+	isAuthenticated := middleware.IsAuthenticated(c)
+	if isAuthenticated {
+		c.HTML(200, "index.html", gin.H{
+			"videos":          videos,
+			"IsAuthenticated": isAuthenticated,
+		})
+		return
+	}
+
+	cookie, err := c.Request.Cookie("authToken")
+	if err == nil && cookie != nil {
+		isAuthenticated = true
+	}
 	c.HTML(200, "index.html", gin.H{
-		"videos": videos,
+		"videos":          videos,
+		"IsAuthenticated": isAuthenticated,
 	})
 }
 func VideoShow(c *gin.Context) {

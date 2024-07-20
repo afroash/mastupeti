@@ -69,7 +69,7 @@ func SignUp(c *gin.Context) {
 	}
 }
 
-// LoginPage function
+// Login function
 func LoginPage(c *gin.Context) {
 	// Get the email and password from the form request.
 	var body struct {
@@ -88,13 +88,16 @@ func LoginPage(c *gin.Context) {
 	if result.Error != nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": "Invalid email or password"}) // Generic message to avoid revealing if email exists
 		return
+
 	}
 
 	// Check if the password is correct.
 	err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(body.Password))
+	//if password is incorrect return login modal with error message
 	if err != nil {
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid email or password"}) // Generic message
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid email or password"})
 		return
+
 	}
 
 	// Generate a JWT token.
@@ -109,7 +112,8 @@ func LoginPage(c *gin.Context) {
 	c.SetCookie("Authorization", tokenString, 3600, "", "", false, true)
 
 	// Redirect on successful login
-	c.Redirect(http.StatusFound, "/") // Redirect to home page
+	// Return success response
+	c.JSON(http.StatusOK, gin.H{"message": "Login successful"})
 }
 
 func Validate(c *gin.Context) {
