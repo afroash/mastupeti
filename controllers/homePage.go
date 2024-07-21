@@ -2,10 +2,12 @@ package controllers
 
 import (
 	"log"
+	"net/http"
 
 	"github.com/afroash/mastupeti/initializers"
 	"github.com/afroash/mastupeti/middleware"
 	"github.com/afroash/mastupeti/models"
+	"github.com/afroash/mastupeti/utils"
 	"github.com/gin-gonic/gin"
 )
 
@@ -51,4 +53,33 @@ func LoginModal(c *gin.Context) {
 // function to render the login modal.
 func UploadFormModal(c *gin.Context) {
 	c.HTML(200, "uploadVideoModal.html", nil)
+}
+
+// function to render about modal.
+func AboutPage(c *gin.Context) {
+	c.HTML(200, "about.html", nil)
+}
+
+// function to render the contact modal.
+func ContactPage(c *gin.Context) {
+	c.HTML(200, "contact.html", nil)
+}
+
+// func to submit the contact form
+func ContactForm(c *gin.Context) {
+	var body struct {
+		Email   string `form:"email" binding:"required,email"`
+		Subject string `form:"subject" binding:"required"`
+		Message string `form:"message" binding:"required"`
+	}
+	if err := c.ShouldBind(&body); err != nil {
+		c.JSON(400, gin.H{"error": err.Error()})
+		return
+	}
+	//send the email
+	if err := utils.SendEmail(body.Email, body.Subject, body.Message, "ashleyc@masterash.co.uk"); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to send email"})
+		return
+	}
+	c.Redirect(302, "/")
 }

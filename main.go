@@ -22,8 +22,9 @@ func main() {
 	// Public routes
 	r.GET("/", controllers.HomePage)
 	//to be done
-	//r.GET("/about", controllers.AboutPage)
-	//r.GET("/contact", controllers.ContactPage)
+	r.GET("/about", controllers.AboutPage)
+	r.GET("/contact", controllers.ContactPage)
+	r.POST("/submitform", controllers.ContactForm)
 
 	r.GET("/admin", controllers.AdminPage)
 
