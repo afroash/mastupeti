@@ -11,4 +11,5 @@ func init() {
 }
 func main() {
 	initializers.DB.AutoMigrate(&models.Video{})
+	initializers.DB.AutoMigrate(&models.User{})
 }
