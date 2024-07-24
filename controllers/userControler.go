@@ -57,11 +57,18 @@ func SignUp(c *gin.Context) {
 		}
 
 		// Optionally, generate a JWT token for the user and send it in the response or store it in a cookie.
+		tokenString, err := utils.GenerateToken(c, user)
+		if err != nil {
+			c.JSON(500, gin.H{"error": "Failed to generate token"})
+			return
+		}
 
-		// Redirect to login page or dashboard or show success message (your choice)
-		c.HTML(200, "signUp.html", gin.H{
-			"showform": false, // Pass success message to template
-		})
+		// Save JWT token in a cookie.
+		c.SetSameSite(http.SameSiteLaxMode)
+		c.SetCookie("Authorization", tokenString, 3600, "", "", false, true)
+
+		// Redirect to Home page on successful signup
+		c.Redirect(http.StatusFound, "/")
 	} else { // GET
 		c.HTML(http.StatusOK, "signUp.html", gin.H{
 			"showForm": true, // Indicate to template to show the form
@@ -143,4 +150,16 @@ func Logout(c *gin.Context) {
 	c.Redirect(http.StatusFound, "/")
 
 	//c.HTML(http.StatusOK, "loginButton.html", nil)
+}
+
+func DeleteUser(c *gin.Context) {
+	// get user from url
+	var user models.User
+	initializers.DB.First(&user, c.Param("id"))
+
+	// delete video
+	initializers.DB.Delete(&user)
+
+	// respond
+	c.Status(200)
 }

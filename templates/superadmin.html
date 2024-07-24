@@ -2,12 +2,17 @@
 <html>
 <head>
   <title>Streaming App Management</title>
+  <script src="https://unpkg.com/htmx.org@1.9.5"></script>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
   <style>
     /* Additional custom styles (if needed) */
     /*centre title*/
     .title {
       text-align: center;
+    }
+    tr.htmx-swapping td {
+    opacity: 0;
+    transition: opacity 1s ease-out;
     }
 
   </style>
@@ -18,6 +23,7 @@
     <div class="container">
       <h1 class="title">Streaming App Management</h1>
 
+
       <h2 class="subtitle">Users</h2>
 
       {{if .users}}
@@ -25,23 +31,24 @@
           <thead>
             <tr>
               <th><input type="checkbox"></th> 
+              <th>ID</th>
               <th>Username</th>
               <th>Email</th>
               <th>Actions</th>
             </tr>
           </thead>
-          <tbody>
-            {{range .users}} 
-              <tr>
+          <tbody hx-confirm="Are you sure?" hx-target="closest tr" hx-swap="outerHTML swap:1s">
+            {{range .users}}               
                 <td><input type="checkbox"></td> 
+                <td>{{.ID}}</td>
                 <td>{{.Username}}</td>
                 <td>{{.Email}}</td>
                 <td>
                   <div class="buttons">
                     <button class="button is-info">Update</button> 
-                    <button class="button is-danger">Delete</button>
+                    <button class="btn danger" hx-delete="/user/{{.ID}}">Delete</button>
                   </div>
-                </td>
+                </td></div>
               </tr>
             {{end}}
           </tbody>
@@ -66,19 +73,21 @@
           <thead>
             <tr>
               <th><input type="checkbox"></th> 
+              <th>ID</th>
               <th>Title</th>              
               <th>Views</th>
               <th>Actions</th>
             </tr>
           </thead>
-          <tbody>
+          <tbody hx-confirm="Are you sure?" hx-target="closest tr" hx-swap="outerHTML swap:1s">
             {{range .videos}}
               <tr>
                 <td><input type="checkbox"></td> 
+                <td>{{.ID}}</td>
                 <td>{{.Title}}</td>                
                 <td>N/A</td> 
                 <td>
-                  <button class="button is-danger">Delete</button>
+                  <button class="btn danger" hx-delete="/videos/{{.ID}}">Delete</button>
                 </td>
               </tr>
             {{end}}

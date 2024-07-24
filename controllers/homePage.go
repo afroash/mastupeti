@@ -23,6 +23,20 @@ func HomePage(c *gin.Context) {
 
 	isAuthenticated := middleware.IsAuthenticated(c)
 	if isAuthenticated {
+
+		//update the videos to include the signed URL
+		keys := make([]string, len(videos))
+		for i, video := range videos {
+			keys[i] = video.URL
+		}
+		urls, err := utils.GetSignedURLs(keys)
+		if err != nil {
+			log.Printf("Error getting signed URLs: %v", err)
+		}
+		for i, video := range videos {
+			videos[i].URL = urls[video.URL]
+		}
+
 		c.HTML(200, "index.html", gin.H{
 			"videos":          videos,
 			"IsAuthenticated": isAuthenticated,
@@ -30,14 +44,6 @@ func HomePage(c *gin.Context) {
 		return
 	}
 
-	cookie, err := c.Request.Cookie("authToken")
-	if err == nil && cookie != nil {
-		isAuthenticated = true
-	}
-	c.HTML(200, "index.html", gin.H{
-		"videos":          videos,
-		"IsAuthenticated": isAuthenticated,
-	})
 }
 
 // function to render the signup modal.

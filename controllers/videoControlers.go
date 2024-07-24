@@ -83,6 +83,20 @@ func VideoList(c *gin.Context) {
 	// Render the index.html template with the videos data
 	isAuthenticated := middleware.IsAuthenticated(c)
 	if isAuthenticated {
+
+		//update the videos to include the signed URL
+		keys := make([]string, len(videos))
+		for i, video := range videos {
+			keys[i] = video.URL
+		}
+		urls, err := utils.GetSignedURLs(keys)
+		if err != nil {
+			log.Printf("Error getting signed URLs: %v", err)
+		}
+		for i, video := range videos {
+			videos[i].URL = urls[video.URL]
+		}
+
 		c.HTML(200, "index.html", gin.H{
 			"videos":          videos,
 			"IsAuthenticated": isAuthenticated,
@@ -90,14 +104,6 @@ func VideoList(c *gin.Context) {
 		return
 	}
 
-	cookie, err := c.Request.Cookie("authToken")
-	if err == nil && cookie != nil {
-		isAuthenticated = true
-	}
-	c.HTML(200, "index.html", gin.H{
-		"videos":          videos,
-		"IsAuthenticated": isAuthenticated,
-	})
 }
 func VideoShow(c *gin.Context) {
 	// get video
@@ -154,5 +160,5 @@ func VideoDelete(c *gin.Context) {
 	initializers.DB.Delete(&video)
 
 	// respond
-	c.Status(204)
+	c.Status(200)
 }

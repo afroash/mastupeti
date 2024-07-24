@@ -10,7 +10,8 @@ import (
 func init() {
 	initializers.LoadEnvVariables()
 	initializers.ConnectToDatabase()
-	//initializers.SyncUserDB()
+	initializers.SyncUserDB()
+	initializers.SyncVideos()
 }
 
 func main() {
@@ -50,6 +51,7 @@ func main() {
 		auth.POST("/videos", controllers.VideoCreate)
 		auth.PUT("/videos/:id", controllers.VideoUpdate)
 		auth.DELETE("/videos/:id", controllers.VideoDelete)
+		auth.DELETE("/user/:id", controllers.DeleteUser)
 		auth.GET("/stats", controllers.Dashboard)
 	}
 
