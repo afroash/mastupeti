@@ -4,3 +4,4 @@ mastupeti
 tmp/
 .air.toml
 vendor/
+*.pem

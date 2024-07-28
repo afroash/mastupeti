@@ -2,6 +2,9 @@ package controllers
 
 import (
 	"log"
+	"net/http"
+	"os"
+	"time"
 
 	"github.com/afroash/mastupeti/initializers"
 	"github.com/afroash/mastupeti/middleware"
@@ -82,29 +85,42 @@ func VideoList(c *gin.Context) {
 	// return all videos
 	// Render the index.html template with the videos data
 	isAuthenticated := middleware.IsAuthenticated(c)
-	if isAuthenticated {
+	keys := make([]string, len(videos))
+	for i, video := range videos {
+		keys[i] = video.URL
+	}
+	//fmt.Println("Video keys:", keys)
 
-		//update the videos to include the signed URL
-		keys := make([]string, len(videos))
-		for i, video := range videos {
-			keys[i] = video.URL
-		}
-		urls, err := utils.GetSignedURLs(keys)
-		if err != nil {
-			log.Printf("Error getting signed URLs: %v", err)
-		}
-		for i, video := range videos {
-			videos[i].URL = urls[video.URL]
-		}
-
-		c.HTML(200, "index.html", gin.H{
-			"videos":          videos,
-			"IsAuthenticated": isAuthenticated,
-		})
+	privateKey, err := utils.LoadPrivateKey("private_key.pem")
+	if err != nil {
+		log.Printf("Error loading private key: %v", err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to load private key"})
 		return
 	}
+	keyPairID := os.Getenv("AWS_CLOUDFRONT_KEY_ID")
+	distributionDomain := os.Getenv("AWS_CLOUDFRONT_DISTRIBUTION")
+	expiration := time.Now().Add(15 * time.Minute)
 
+	signedURL, err := utils.GenerateCloudFrontSignedURLs(keys, distributionDomain, keyPairID, privateKey, expiration)
+	if err != nil {
+		log.Printf("Error generating signed URLs: %v", err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to sign URLs"})
+		return
+	}
+	//fmt.Println("Distribution Domain:", distributionDomain)
+	//fmt.Println("Signed URLs:", signedURL)
+
+	for i, video := range videos {
+		videos[i].URL = signedURL[video.URL]
+	}
+	//fmt.Println("Updated videos with signed URLs:", videos)
+
+	c.HTML(200, "index.html", gin.H{
+		"videos":          videos,
+		"IsAuthenticated": isAuthenticated,
+	})
 }
+
 func VideoShow(c *gin.Context) {
 	// get video
 	var video models.Video
