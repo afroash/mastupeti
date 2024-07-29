@@ -20,7 +20,11 @@ COPY --from=builder /app/middleware ./middleware
 COPY --from=builder /app/utils ./utils
 COPY --from=builder /app/initializers ./initializers
 COPY --from=builder /app/wait-for-it.sh ./
+COPY --from=builder /app/private_key.pem ./
+COPY --from=builder /app/public_key.pem ./
 # Install necessary tools
 RUN apk add --no-cache netcat-openbsd
 
-CMD ["./wait-for-it.sh", "database", "5432", "--", "./main"]
+EXPOSE 3000
+
+CMD ["./main"]

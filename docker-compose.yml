@@ -5,6 +5,7 @@ volumes:
   postgres_data:
 
 services:
+  
   app:
     build: .
     container_name: app
@@ -12,18 +13,8 @@ services:
       - "3000:3000"
     depends_on:
       - postgres
+    env_file: ".prod.env"
+     
     environment:
-      - DATABASE_URL=postgres://${DB_USERNAME}:${DB_PASSWORD}@postgres:5432/${DB_NAME}?sslmode=disable
+      - DATABASE_URL=postgres://${DB_USERNAME}:${DB_PASSWORD}@postgres:5432/${DB_NAME}?sslmode=require
 
-  postgres:
-    image: postgres
-    container_name: database
-    restart: always
-    environment:
-      - POSTGRES_DB=${DB_NAME}
-      - POSTGRES_USER=${DB_USERNAME}
-      - POSTGRES_PASSWORD=${DB_PASSWORD}
-    ports:
-      - "5432:5432"
-    volumes:
-      - postgres_data:/var/lib/postgresql/data

@@ -1,6 +1,6 @@
 *.bin
 mastupeti
-.env
+*.env
 tmp/
 .air.toml
 vendor/
