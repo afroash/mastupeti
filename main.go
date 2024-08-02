@@ -27,7 +27,7 @@ func main() {
 	r.GET("/contact", controllers.ContactPage)
 	r.POST("/submitform", controllers.ContactForm)
 
-	r.GET("/admin", controllers.AdminPage)
+	//r.GET("/admin", controllers.AdminPage)
 
 	//Signup and login routes
 	r.POST("/signup", controllers.SignUp)

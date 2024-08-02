@@ -1,22 +1,21 @@
 <nav class="navbar is-dark">
-  <div class="navbar-brand">
-      <a class="navbar-item" href="/">Home</a>
-      <a class="navbar-item" href="/videos">All Videos</a>
-      <a class="navbar-item" hx-get="/about" hx-target="body" hx-swap="beforeend">About</a>
-      <a class="navbar-item" hx-get="/contact" hx-target="body" hx-swap="beforeend">Contact Us</a>
-  </div>
-  <div class="navbar-menu">
-      <div class="navbar-end">
-          {{if .IsAuthenticated}}
-              <button class="btn primary" hx-get="/stats" hx-target="body" hx-swap="beforeend">Stats</button>
-              <button class="btn primary" hx-get="/upload-modal" hx-target="body" hx-swap="beforeend">Upload</button>
-              <a class="navbar-item" href="/logout">Logout</a>
-          {{else}}
-              <!-- Trigger/Open The Signup Modal -->
-              <button class="btn primary" hx-get="/signup-modal" hx-target="body" hx-swap="beforeend">SignUp</button>
-              <!-- Trigger/Open The Login Modal -->
-              <button class="btn primary" hx-get="/login-modal" hx-target="body" hx-swap="beforeend">Login</button>
-          {{end}}
+    <div class="navbar-brand">
+      <div class="topnav" id="myTopnav">
+        <a class="navbar-item active" href="/">Home</a>
+        <a class="navbar-item" href="/videos">All Videos</a>
+        <a class="navbar-item" hx-get="/about" hx-target="body" hx-swap="beforeend">About</a>
+        <a class="navbar-item" hx-get="/contact" hx-target="body" hx-swap="beforeend">Contact Us</a>
+        {{if .IsAuthenticated}}
+          <a class="navbar-item" hx-get="/stats" hx-target="body" hx-swap="beforeend">Stats</a>
+          <a class="navbar-item" hx-get="/upload-modal" hx-target="body" hx-swap="beforeend">Upload</a>
+          <a class="navbar-item" href="/logout">Logout</a>
+        {{else}}
+          <a class="navbar-item" hx-get="/signup-modal" hx-target="body" hx-swap="beforeend">SignUp</a>
+          <a class="navbar-item" hx-get="/login-modal" hx-target="body" hx-swap="beforeend">Login</a>
+        {{end}}
+        <a href="javascript:void(0);" class="icon" onclick="myFunction()">
+          <i class="fa fa-bars"></i>
+        </a>
       </div>
-  </div>
-</nav>
+    </div>
+  </nav>

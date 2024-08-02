@@ -14,23 +14,35 @@ import (
 )
 
 func VideoCreate(c *gin.Context) {
+	// Set headers for HTMX response
+	c.Writer.Header().Set("content-type", "text/html")
+
 	// Handle video upload (POST only)
 	var fileURL string
-	if c.Request.Method == "POST" {
-		file, fileHeader, err := c.Request.FormFile("file")
-		if err != nil {
-			c.JSON(400, gin.H{"error": "File upload failed!"})
-			return
-		}
-		defer file.Close()
-
-		// Upload video to S3
-		fileURL, err = utils.UploadToS3(file, fileHeader)
-		if err != nil {
-			c.JSON(500, gin.H{"error": "Error uploading file to S3"})
-			return
-		}
+	file, fileHeader, err := c.Request.FormFile("file")
+	if err != nil {
+		c.JSON(400, gin.H{"error": "File upload failed!"})
+		return
 	}
+	defer file.Close()
+
+	// Create a ProgressReader to track upload progress
+	progressReader := &utils.ProgressReader{
+		Reader: file,
+		Total:  fileHeader.Size,
+		OnProgress: func(percentage int) {
+			// c.Writer.Write([]byte(fmt.Sprintf("<progress value='%d' max='100'></progress>", percentage)))
+			// c.Writer.Flush()
+		},
+	}
+
+	// Upload video to S3
+	fileURL, err = utils.UploadToS3(progressReader, fileHeader)
+	if err != nil {
+		c.JSON(500, gin.H{"error": "Error uploading file to S3"})
+		return
+	}
+
 	// Get authenticated user from context
 	user, exists := c.Get("user")
 	if !exists {
@@ -42,39 +54,33 @@ func VideoCreate(c *gin.Context) {
 
 	// Get data from request (for both GET and POST)
 	var body struct {
-		Title string `json:"title" form:"title"`
-		Body  string `json:"body" form:"body"`
+		Title       string `json:"title" form:"title"`
+		Description string `json:"description" form:"description"`
 	}
-
 	if err := c.ShouldBind(&body); err != nil {
 		c.JSON(400, gin.H{"error": "Invalid form data"})
 		return
 	}
-
-	// Handle both GET and POST
-	if c.Request.Method == "POST" {
-		// Create video (POST only)
-		video := models.Video{
-			Title:  body.Title,
-			URL:    fileURL,
-			Body:   body.Body,
-			UserID: userID,
-		}
-		result := initializers.DB.Create(&video)
-		if result.Error != nil {
-			c.JSON(500, gin.H{"error": "Failed to create video"})
-			return
-		}
-
-		// Return "Add Video" button HTML snippet to replace the form
-		c.Redirect(302, "/videos")
-	} else { // GET
-		// Return the initial form for adding videos
-		c.HTML(200, "addVideo.html", gin.H{
-			"showForm": true, // Indicate to template to show the form
-		})
+	// Create video video and save to DB.
+	video := models.Video{
+		Title:     body.Title,
+		URL:       fileURL,
+		Body:      body.Description,
+		UserID:    userID,
+		Videosize: fileHeader.Size,
+		MimeType:  fileHeader.Header.Get("Content-Type"),
 	}
+	result := initializers.DB.Create(&video)
+	if result.Error != nil {
+		c.JSON(500, gin.H{"error": "Failed to create video"})
+		return
+	}
+
+	// Redirect to Videos list
+	//c.Redirect(302, "/videos")
+	c.JSON(200, gin.H{"redirect": "/videos"})
 }
+
 func VideoList(c *gin.Context) {
 	// get videos
 	var videos []models.Video

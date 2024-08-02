@@ -7,6 +7,7 @@ import (
 	"encoding/pem"
 	"errors"
 	"fmt"
+	"io"
 	"mime/multipart"
 	"os"
 	"time"
@@ -19,8 +20,24 @@ import (
 	"github.com/aws/aws-sdk-go-v2/service/s3"
 )
 
-// func to upload video to s3 should return metadata of the video. Update1.0
-func UploadToS3(file multipart.File, fileHeader *multipart.FileHeader) (string, error) {
+type ProgressReader struct {
+	io.Reader
+	Total      int64
+	ReadSoFar  int64
+	OnProgress func(percentage int)
+}
+
+func (pr *ProgressReader) Read(p []byte) (int, error) {
+	n, err := pr.Reader.Read(p)
+	pr.ReadSoFar += int64(n)
+	if pr.Total > 0 {
+		percentage := int(float64(pr.ReadSoFar) / float64(pr.Total) * 100)
+		pr.OnProgress(percentage)
+	}
+	return n, err
+}
+
+func UploadToS3(file io.Reader, fileHeader *multipart.FileHeader) (string, error) {
 	initializers.LoadEnvVariables()
 	cfg, err := config.LoadDefaultConfig(context.TODO(), config.WithRegion(os.Getenv("AWS_REGION")))
 	if err != nil {
@@ -31,9 +48,10 @@ func UploadToS3(file multipart.File, fileHeader *multipart.FileHeader) (string, 
 	uploader := manager.NewUploader(client)
 
 	result, err := uploader.Upload(context.TODO(), &s3.PutObjectInput{
-		Bucket: aws.String("mastupeti-videos-store"),
-		Key:    aws.String(fileHeader.Filename),
-		Body:   file,
+		Bucket:      aws.String("mastupeti-videos-store"),
+		Key:         aws.String(fileHeader.Filename),
+		Body:        file,
+		ContentType: aws.String(fileHeader.Header.Get("Content-Type")),
 	})
 	if err != nil {
 		return "", fmt.Errorf("failed to upload file, %v", err)
